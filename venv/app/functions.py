@@ -1,4 +1,6 @@
 from pymongo import MongoClient
+from cryptography.fernet import Fernet
+
 
 def connect_db():
     test_str = "7yPxFfQLlq1ssIIm"
@@ -6,6 +8,11 @@ def connect_db():
     client = MongoClient(access_line)
     db = client.get_database("TournamentApp")
     return db
+
+def encrypt(password: str):
+    key = b's81T7YjKtDgGwZs5etFstUsFE6ndduFkdct-OT-k7Rg='
+    fernet = Fernet(key)
+    return fernet.encrypt(password.encode())
 
 def create_record(table, attributes: list):
     keys = table.find_one().keys()
