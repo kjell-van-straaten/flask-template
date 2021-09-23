@@ -1,7 +1,5 @@
-from app.functions import create_record
 from flask import Flask
-
-from functions import *
+from app.functions import *
 
 app= Flask(__name__)
 @app.route('/')
