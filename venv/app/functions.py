@@ -9,10 +9,10 @@ def connect_db():
     db = client.get_database("TournamentApp")
     return db
 
-def encrypt(password: str):
+def encryption():
     key = b's81T7YjKtDgGwZs5etFstUsFE6ndduFkdct-OT-k7Rg='
     fernet = Fernet(key)
-    return fernet.encrypt(password.encode())
+    return fernet
 
 def create_record(table, attributes: list):
     keys = table.find_one().keys()

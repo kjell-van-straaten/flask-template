@@ -1,27 +1,31 @@
 from flask import Flask, render_template, request,g, redirect, session, Response, url_for
-#from app.functions import *
-from functions import *
+from app.functions import *
+from app.classes import *
+from bson import ObjectId
 
 app= Flask(__name__)
 app.secret_key = 'courgette'
 
-class User:
-  def __init__(self, id, username, password):
-    self.id = id
-    self.username = username
-    self.password = password
+#establish connection to db
+db = connect_db()
 
-  def __repr__(self):
-    return f'<User: {self.username}>'
+accounts = db.Account
+bets = db.Bet
+matches = db.Match
+tournaments = db.Tournaments
 
-users = []
-users.append(User(id=1, username='admin', password='123'))
+#string = str(accounts.find_one({"name": 'Kjellvs19'})['_id'])
+#print(accounts.find_one({"_id": ObjectId(string)}))
+
+#establish encryption
+fernet = encryption()
 
 @app.before_request
 def before_request():
   g.user = None
   if 'user_id' in session:
-    user = [x for x in users if x.id == session['user_id']][0]
+    current_user = accounts.find_one({"_id": ObjectId(session['user_id'])})
+    user = User(current_user['_id'],current_user['name'],current_user['password'])
     g.user = user
 
 @app.route('/')
@@ -34,42 +38,40 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   if request.method == 'POST':
-    print("in post")
     session.pop('user_id', None)
 
     username = request.form['username']
     password = request.form['password']
 
-    print(username)
+    #find instance associated to given name, if no instance is found NONE is returned
+    login_user = accounts.find_one({"name": username})
+    user = User(login_user['_id'],login_user['name'],login_user['password'])
+    
+    #if we have a user, and the decrypted passwords match then save new user id and redirect to tournaments page;
+    if login_user and (fernet.decrypt(login_user["password"]).decode() == password):
+      session['user_id'] = str(user.id)
+      return redirect("/tournaments")
 
-    user = [x for x in users if x.username == username][0]
-    if user and user.password == password:
-      session['user_id'] = user.id
-      return redirect("/")
-
+    #else, redirect to login page again
     return redirect('/login')
 
   else: 
     return render_template('login.html')
 
-#@app.route('/login')
-#login page; add functionality to go to sign-up page, add functionality to check login, and save current logged in account (hard?)
-#def login():
-#  return render_template('login.html')
-
-#TODO1: build page for creating account, POST account into database, w/ encrypted password
-@app.route('/signup', METHODS=['POST', 'GET'])
+#page for creating account, POST account into database, w/ encrypted password
+@app.route('/signup', methods=['POST', 'GET'])
 def signup():
   if request.method == 'POST':
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
 
-    if check_existence(username):
-      return "account already exists"
+    if accounts.find_one({"name": username}):
+      return render_template('signup.html') #add argument that acc already exists
 
     else:
-      create_record(accounts, [username, fernet.encrypt(password.encode()), email])
+      create_record(accounts, [username, email, fernet.encrypt(password.encode())])
+      return redirect('/login')
 
   return render_template('signup.html')
 
@@ -83,21 +85,6 @@ def signup():
 #and optionality to fill in scores which can be posted (only if owner of tournament!)
 #@app.route('/bet/{tournament_name}')
 
-#establish connection to db
-db = connect_db()
-
-#establish encryption
-#fernet = encryption()
 
 #fernet.encrypt(password.encode())
-#fernet.decrypt(encPassword).decode()
-
-accounts = db.Account
-bets = db.Bet
-matches = db.Match
-tournaments = db.Tournaments
-
-
-
-#create_record(accounts, ['BitchBoy2','No', '789'])
 
