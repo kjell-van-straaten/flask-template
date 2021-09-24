@@ -86,3 +86,10 @@ color: white;
 .links a{
 margin-left: 4px;
 }
+
+.centered_container {
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
