@@ -17,12 +17,34 @@
 
     <body>
         <div id="navbar"></div>
+        <div>
+            Matches for tournament {{name}}: <br>
+            {% for match in matches %} 
+                {{match.name}} <br>
+            {%endfor%}
+        </div>
+        <div class="container centered_container">
+            <form method="post">
+            <div class="form-group">
+            <p> Create Match </p>
+            <input class="form-control" type="text" placeholder="Enter party 1" name="party 1">
+            <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
+            <input class="form-control" type="text" placeholder="Enter date" name="date">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            {% if failed %}
+				<small id="emailHelp" class="form-text text-danger">Match already exists</small>
+			{% endif %}
+            {% if success %}
+                <small id="emailHelp" class="form-text text-success">Match successfully created</small>
+            {% endif %}
+            </form>
+        </div>
         <script>
             $(function(){
-              $("#navbar").load("navbar");
+              $("#navbar").load("/navbar");
             });
         </script>
     </body>
-
 
 </html>

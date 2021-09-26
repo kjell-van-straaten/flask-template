@@ -19,8 +19,10 @@
         <div id="navbar"></div>
 
         <div >
-            <div class="d-flex justify-content-center h-100">
+            <div class="container centered_container">
                 <form method="post">
+                    <p>Welcome to BetTourny! <br> 
+                    Find your bet tournament by filling in the search bar below, or create your own tournament after logging in.</p>
                     <div class="input-group">
                         <input type="search" class="form-control rounded" placeholder="Tournament name" aria-label="Search"
                           aria-describedby="search-addon" name="search-term"/>
@@ -37,7 +39,7 @@
 
         <script>
             $(function(){
-              $("#navbar").load("navbar");
+              $("#navbar").load("/navbar");
             });
         </script>
     </body>

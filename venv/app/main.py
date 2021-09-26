@@ -2,9 +2,11 @@ from flask import Flask, render_template, request,g, redirect, session, Response
 from app.functions import *
 from app.classes import *
 from bson import ObjectId
+from datetime import date, timedelta
 
 app= Flask(__name__)
 app.secret_key = 'courgette'
+
 
 #establish connection to db
 db = connect_db()
@@ -87,7 +89,7 @@ def signup():
     email = request.form['email']
 
     if accounts.find_one({"name": username}):
-      return render_template('signup.html') #add argument that acc already exists
+      return render_template('signup.html', failed = True) 
 
     else:
       create_record(accounts, [username, email, fernet.encrypt(password.encode())])
@@ -95,32 +97,68 @@ def signup():
 
   return render_template('signup.html')
 
-#TODO2: build landing page post-login, overviewing tournaments
-@app.route('/tournaments')
+#landing page for tournaments, add statistics per tournament
+@app.route('/tournaments', methods=['POST', 'GET'])
 def tournament_page():
   if not g.user:
     return redirect('/login')
-  return render_template('tournaments.html')
+  else:
+    user_tournaments = list(tournaments.find({"owner": g.user.username}))
 
-#TODO2.5: create tournament page
-@app.route('/create_tournament')
+  return render_template('tournaments.html', user_tournaments=user_tournaments)
+
+#TODO2.5: integrate this part into tournaments page /tournaments
+@app.route('/create_tournament', methods=['POST', 'GET'])
 def create_tournaments():
   if not g.user:
     return redirect('/login')
+
+  if request.method == 'POST':
+    tournament_name = request.form['tournamentname']
+
+    if not tournaments.find_one({"name": tournament_name}):
+      create_record(tournaments, [tournament_name, g.user.username])
+      return render_template('createTournament.html', success = True)
+
+    else:
+      return render_template('createTournament.html', failed = True)
+
+
   return render_template('createTournament.html')
 
-#TODO3: build tournament overview (i.e. analytics dashboard, settings, leaderboards) for selected tournament in TODO2, based on logged in account (Hard!)
-@app.route('/tournaments/{tournament_name}')
-def tournament_overview():
+#TODO3: build tournament overview (i.e. analytics dashboard, settings, leaderboards) for selected tournament, allow modifying results of matches
+@app.route('/tournaments/<tournament_name>', methods=['GET', 'POST'])
+def tournament_overview(tournament_name):
   if not g.user:
     return redirect('/login')
-  return render_template('tournamentOverview.html', tournament_name = "clicked tournament")
 
-#TODO4: build betting page for selected tournament, pulls active (in the next 7 days) matches, 
+  tournament_matches = list(matches.find({"tournament": tournament_name}))
+
+  if request.method == 'POST':
+    party_1 = request.form['party 1']
+    party_2 = request.form['party 2']
+    date = request.form['date']
+    match_name = party_1 + ' - ' + party_2
+
+    if not matches.find_one({"name": match_name}):
+      create_record(matches, [match_name, date, g.user.username, party_1, party_2, 'n.a.', tournament_name])
+      return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches, success=True)
+
+    else:
+      return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
+
+  else: 
+    return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches)
+
+#TODO4: pulls active (in the next 7 days) matches, allow for adding a prediction
 #and optionality to fill in scores which can be posted (only if owner of tournament!)
-@app.route('/bet/<name>')
+@app.route('/bet/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
-  return render_template('betTournament.html', name = name)
+  active_matches = list(
+    matches.find({
+      "tournament": name 
+      ##"date": {"$gte": date.today(), "$lte": date.today() + timedelta(days=7)}
+    }))
 
-#fernet.encrypt(password.encode())
+  return render_template('betTournament.html', name = name, matches=active_matches)
 

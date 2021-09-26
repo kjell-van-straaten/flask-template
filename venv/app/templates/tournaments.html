@@ -17,9 +17,14 @@
 
     <body>
         <div id="navbar"></div>
+        <div>
+            {% for item in user_tournaments%} 
+            <a class="btn btn-primary" href="/tournaments/{{item.name}}" role="button">{{item.name}}</a>
+            {%endfor%}
+        </div>
         <script>
             $(function(){
-              $("#navbar").load("navbar");
+              $("#navbar").load("/navbar");
             });
         </script>
     </body>

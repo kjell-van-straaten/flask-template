@@ -57,6 +57,11 @@
 					<div class="form-group">
 						<input type="submit" value="Sign Up" class="btn float-right login_btn">
 					</div>
+					<div>
+						{% if failed %}
+							<small id="emailHelp" class="form-text text-danger">User already exists!</small>
+						{% endif %}
+					</div>
 				</form>
 			</div>
 			<div class="card-footer">

@@ -18,17 +18,23 @@
     <body>
         <div id="navbar"></div>
         <div class="container centered_container">
-            <form>
+            <form method="post">
             <div class="form-group">
-                <label class = "text-light">New Tournament</label>
-                <input class="form-control" type="text" placeholder="Enter tournament name">
+                <p> Create New Tournament </p>
+                <input class="form-control" type="text" placeholder="Enter tournament name" name="tournamentname">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+            {% if failed %}
+				<small id="emailHelp" class="form-text text-danger">Tournament already exists</small>
+			{% endif %}
+            {% if success %}
+                <small id="emailHelp" class="form-text text-success">Tournament successfully created</small>
+            {% endif %}
             </form>
         </div>
         <script>
             $(function(){
-              $("#navbar").load("navbar");
+              $("#navbar").load("/navbar");
             });
         </script>
     </body>

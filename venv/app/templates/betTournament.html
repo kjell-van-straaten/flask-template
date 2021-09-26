@@ -18,13 +18,11 @@
     <body>
         <div id="navbar"></div>
         <div>
-            <h1>
-                Betting page for {{ name }}.
-            </h1>
-
+        Matches for tournament {{name}}: <br>
+            {% for match in matches %} 
+                {{match.name}} <br>
+            {%endfor%}
         </div>
-
-
         <script>
             $(function(){
               $("#navbar").load("/navbar");
