@@ -21,7 +21,9 @@
             {% for item in user_tournaments%} 
             <a class="btn btn-primary" href="/tournaments/{{item.name}}" role="button">{{item.name}}</a>
             {%endfor%}
+            <!-- #TODO 4: improve prettyness of this page  -->
         </div>
+        <!-- #TODO 3: add create tournament here  -->
         <script>
             $(function(){
               $("#navbar").load("/navbar");

@@ -19,9 +19,21 @@
         <div id="navbar"></div>
         <div>
             Matches for tournament {{name}}: <br>
+            <table>
+                <tr>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Result</th>
+                </tr>
             {% for match in matches %} 
-                {{match.name}} <br>
+                <tr>
+                    <th>{{match.date}}</th>
+                    <th>{{match.name}}</th>
+                    <th>{{match.result}}</th>
+                </tr>
             {%endfor%}
+            <!-- #TODO 1: button for changing match outcome, potentially through a pop-up  -->
+            </table>
         </div>
         <div class="container centered_container">
             <form method="post">
@@ -29,7 +41,7 @@
             <p> Create Match </p>
             <input class="form-control" type="text" placeholder="Enter party 1" name="party 1">
             <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
-            <input class="form-control" type="text" placeholder="Enter date" name="date">
+            <input class="form-control" type="date" name="date" value="2021-07-22" min="2021-01-01" max="2023-21-31">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
             {% if failed %}

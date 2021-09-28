@@ -107,7 +107,7 @@ def tournament_page():
 
   return render_template('tournaments.html', user_tournaments=user_tournaments)
 
-#TODO2.5: integrate this part into tournaments page /tournaments
+#TODO2.5: integrate this page into tournaments page like matches is integrated in tom atches overview
 @app.route('/create_tournament', methods=['POST', 'GET'])
 def create_tournaments():
   if not g.user:
@@ -142,15 +142,16 @@ def tournament_overview(tournament_name):
 
     if not matches.find_one({"name": match_name}):
       create_record(matches, [match_name, date, g.user.username, party_1, party_2, 'n.a.', tournament_name])
-      return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches, success=True)
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, success=True)
 
     else:
-      return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
 
   else: 
-    return render_template('tournamentOverview.html', name = tournament_name, matches = tournament_matches)
+    return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
 
-#TODO4: pulls active (in the next 7 days) matches, allow for adding a prediction
+#TODO4: create functionallity to be able to create a prediction for all active matches (i.e. one big form for active matches)
+#TODO5: fix date formatting.
 #and optionality to fill in scores which can be posted (only if owner of tournament!)
 @app.route('/bet/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
