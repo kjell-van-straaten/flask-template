@@ -2,11 +2,10 @@ from flask import Flask, render_template, request,g, redirect, session, Response
 from app.functions import *
 from app.classes import *
 from bson import ObjectId
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 app= Flask(__name__)
 app.secret_key = 'courgette'
-
 
 #establish connection to db
 db = connect_db()
@@ -52,7 +51,6 @@ def navbar():
 
 @app.route('/logout')
 def logout():
-  print(session['user_id'] + 'logged out')
   session.pop('user_id', None)
   return redirect('/login')
 
@@ -68,7 +66,7 @@ def login():
     #find instance associated to given name, if no instance is found NONE is returned
     login_user = accounts.find_one({"name": username})
     
-        #if we have a user, and the decrypted passwords match then save new user id and redirect to tournaments page;
+    #if we have a user, and the decrypted passwords match then save new user id and redirect to tournaments page;
     if login_user and (fernet.decrypt(login_user["password"]).decode() == password):
       user = User(login_user['_id'],login_user['name'],login_user['password'])
       session['user_id'] = str(user.id)
@@ -103,29 +101,21 @@ def signup():
 def tournament_page():
   if not g.user:
     return redirect('/login')
+
   else:
     user_tournaments = list(tournaments.find({"owner": g.user.username}))
 
-  return render_template('tournaments.html', user_tournaments=user_tournaments)
+    if request.method == 'POST':
+      tournament_name = request.form['tournamentname']
 
-#TODO2.5: integrate this page into tournaments page like matches is integrated in tom atches overview
-@app.route('/create_tournament', methods=['POST', 'GET'])
-def create_tournaments():
-  if not g.user:
-    return redirect('/login')
+      if not tournaments.find_one({"name": tournament_name}):
+        create_record(tournaments, [tournament_name, g.user.username])
+        return render_template('tournaments.html', user_tournaments=user_tournaments, success = True)
 
-  if request.method == 'POST':
-    tournament_name = request.form['tournamentname']
+      else:
+        return render_template('tournaments.html', user_tournaments=user_tournaments, failed = True)
 
-    if not tournaments.find_one({"name": tournament_name}):
-      create_record(tournaments, [tournament_name, g.user.username])
-      return render_template('createTournament.html', success = True)
-
-    else:
-      return render_template('createTournament.html', failed = True)
-
-
-  return render_template('createTournament.html')
+    return render_template('tournaments.html', user_tournaments=user_tournaments)
 
 #TODO3: build tournament overview (i.e. analytics dashboard, settings, leaderboards) for selected tournament, allow modifying results of matches
 @app.route('/tournaments/<tournament_name>', methods=['GET', 'POST'])
@@ -133,23 +123,29 @@ def tournament_overview(tournament_name):
   if not g.user:
     return redirect('/login')
 
-  tournament_matches = list(matches.find({"tournament": tournament_name}))
+  else:
+    tournament_matches = list(matches.find({"tournament": tournament_name}))
 
-  if request.method == 'POST':
-    party_1 = request.form['party 1']
-    party_2 = request.form['party 2']
-    date = request.form['date']
-    match_name = party_1 + ' - ' + party_2
+    if request.method == 'POST':
+      if 'new_match' in request.form:
+        party_1 = request.form['party 1']
+        party_2 = request.form['party 2']
+        date = datetime.strptime(request.form['date'], '%Y-%m-%d')
+        match_name = party_1 + ' - ' + party_2
 
-    if not matches.find_one({"name": match_name}):
-      create_record(matches, [match_name, date, g.user.username, party_1, party_2, 'n.a.', tournament_name])
-      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, success=True)
+        if not matches.find_one({"name": match_name}):
+          create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a'])
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, success=True)
 
-    else:
-      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
+        else:
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
+      
+      elif 'edit_match' in request.form:
+        
+        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
 
-  else: 
-    return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
+    else: 
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
 
 #TODO4: create functionallity to be able to create a prediction for all active matches (i.e. one big form for active matches)
 #TODO5: fix date formatting.

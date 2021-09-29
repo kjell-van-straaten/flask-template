@@ -23,7 +23,21 @@
             {%endfor%}
             <!-- #TODO 4: improve prettyness of this page  -->
         </div>
-        <!-- #TODO 3: add create tournament here  -->
+        <div class="container centered_container">
+            <form method="post">
+            <div class="form-group">
+                <p> Create New Tournament </p>
+                <input class="form-control" type="text" placeholder="Enter tournament name" name="tournamentname">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            {% if failed %}
+				<small id="emailHelp" class="form-text text-danger">Tournament already exists</small>
+			{% endif %}
+            {% if success %}
+                <small id="emailHelp" class="form-text text-success">Tournament successfully created</small>
+            {% endif %}
+            </form>
+        </div>
         <script>
             $(function(){
               $("#navbar").load("/navbar");
