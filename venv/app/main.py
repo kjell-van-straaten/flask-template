@@ -29,17 +29,17 @@ def before_request():
 @app.route('/', methods=['GET', 'POST'])
 #landing page; should have functionality on finding a tournament to bet on, or logging in for creating/overviewing owned tournaments.
 def index():
-  if request.method == 'POST':
-    tournament_name = request.form['search-term']
-    tournament = tournaments.find_one({"name": tournament_name})
-
-    if tournament:
-      return redirect(url_for('bet_tournament', name=tournament_name))
-    else:
-      return render_template('home.html', failed=True)
-
-  else:
-    return render_template('home.html')
+  all_tournaments = list(tournaments.find({}))
+  return render_template('home.html', tournaments = all_tournaments)
+  # if request.method == 'POST':
+  #   tournament_name = request.form['search-term']
+  #   tournament = tournaments.find_one({"name": tournament_name})
+  #   if tournament:
+  #     return redirect(url_for('bet_tournament', name=tournament_name))
+  #   else:
+  #     return render_template('home.html', failed=True)
+  # else:
+  #   return render_template('home.html', tournaments = all_tournaments)
 
 @app.route('/navbar')
 def navbar():

@@ -25,7 +25,7 @@
                     Find your bet tournament by filling in the search bar below, or create your own tournament after logging in.</p>
                     <div class="input-group">
                         <input type="search" class="form-control rounded" placeholder="Tournament name" aria-label="Search"
-                          aria-describedby="search-addon" name="search-term"/>
+                          aria-describedby="search-addon" name="search-term" id="myInput"/>
                         <button type="submit" class="btn btn-outline-primary">search</button>
                         <div>
                             {% if failed %}
@@ -33,6 +33,11 @@
                             {% endif %}
                         </div>
                     </div>
+                    <ul class="list-group" id="myList">
+                        {% for t in tournaments %} 
+                        <li class="list-group-item"><a class="btn float-left" href="/bet/{{t.name}}" role="button">{{t.name}}</a></li>
+                        {%endfor%}
+                    </ul>  
                 </form>
             </div>
         </div>
@@ -40,6 +45,15 @@
         <script>
             $(function(){
               $("#navbar").load("/navbar");
+            });
+
+            $(document).ready(function(){
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myList li").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
             });
         </script>
     </body>
