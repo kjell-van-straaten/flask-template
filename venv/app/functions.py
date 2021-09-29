@@ -1,11 +1,12 @@
 from pymongo import MongoClient
 from cryptography.fernet import Fernet
+import ssl
 
 
 def connect_db():
     test_str = "7yPxFfQLlq1ssIIm"
     access_line = "mongodb+srv://admin:{}@cluster0.mdtqp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority".format(test_str)
-    client = MongoClient(access_line)
+    client = MongoClient(access_line, ssl_cert_reqs=ssl.CERT_NONE)
     db = client.get_database("TournamentApp")
     return db
 
