@@ -19,11 +19,13 @@
         <div id="navbar"></div>
         <form method="post" id="edit_match" name="edit_match">                      
         </form>
-        <div>
-            <b>Matches for tournament {{name}}: </b><br>
-            <table class="table">
+        <div class="centered_container_title">
+        <p class="table-title">Matches for tournament {{name}}: </p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
                 <tr> 
-                  <th scope="col">Date</th>
+                  <th scope="col">Date</th> <!-- TODO change date format -->
                   <th scope="col">Name (readonly)</th>
                   <th scope="col">Party 1 score</th>
                   <th scope="col">Party 2 score</th>
@@ -33,16 +35,16 @@
                 <tr>
                     <th>{{match.date}}</th>
                     <th>
-                        <input type="text" placeholder="{{match.name}}" form="edit_match" name="edit name {{match.name}}" readonly>
+                        <input class="form-control" type="text" placeholder="{{match.name}}" form="edit_match" name="edit name {{match.name}}" readonly>
                     </th>                
-                    <th>
-                        <input type="text" placeholder="{{match.result_1}}" form="edit_match" name="edit party 1 {{match.name}}" value="{{match.result_1}}">
+                    <th > <!-- TODO Make results input boxes smaller -->
+                        <input class="form-control" type="text" placeholder="{{match.result_1}}" form="edit_match" name="edit party 1 {{match.name}}" value="{{match.result_1}}">
                     </th>
                     <th>
-                        <input type="text" placeholder="{{match.result_2}}" form="edit_match" name="edit party 2 {{match.name}}" value="{{match.result_2}}">
+                        <input class="form-control " type="text" placeholder="{{match.result_2}}" form="edit_match" name="edit party 2 {{match.name}}" value="{{match.result_2}}">
                     </th>
                     <th>
-                        <button type="submit" class="btn btn-primary" form="edit_match" name="edit match {{match.name}}" value="{{match.name}}">Submit</button>
+                        <button type="submit" class="btn login_btn" form="edit_match" name="edit match {{match.name}}" value="{{match.name}}">Submit</button>
                     </th>
                 </tr>
             {%endfor%}
@@ -52,12 +54,12 @@
         <div class="container centered_container">
             <form method="post" name="new_match">
             <div class="form-group">
-            <p> Create Match </p>
+            <p style="color:#f9efc1;"> Create Match </p>
             <input class="form-control" type="text" placeholder="Enter party 1" name="party 1">
             <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
             <input class="form-control" type="date" name="date" value="2021-07-22" min="2021-01-01" max="2023-21-31">
             </div>
-            <button type="submit" class="btn btn-primary" name="new_match">Submit</button>
+            <button type="submit" class="btn login_btn" name="new_match">Submit</button>
             {% if failed %}
 				<small id="emailHelp" class="form-text text-danger">Match already exists</small>
 			{% endif %}

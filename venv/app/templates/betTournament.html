@@ -18,8 +18,11 @@
     <body>
         <div id="navbar"></div>
         <form method="post" id="bet_match" name="bet_match"></form>
-        <div>
-            <table class="table">
+        <div class="centered_container_title">
+        <p class="table-title">Place your bets for {{name}}: </p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
                 <tr> 
                   <th scope="col">Date</th>
                   <th scope="col">Name (readonly)</th>
@@ -40,7 +43,7 @@
                         <input type="text" placeholder="score party 2" form="edit_match" name="edit party 2 {{match.name}}" value="0">
                     </th>
                     <th>
-                        <button type="submit" class="btn btn-primary" form="edit_match" name="bet match {{match.name}}" value="{{match.name}}">Submit</button>
+                        <button type="submit" class="btn login_btn" form="edit_match" name="bet match {{match.name}}" value="{{match.name}}">Submit</button>
                     </th>
                 </tr>
             {%endfor%}
