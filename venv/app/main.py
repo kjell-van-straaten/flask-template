@@ -3,6 +3,7 @@ from app.functions import *
 from app.classes import *
 from bson import ObjectId
 from datetime import date, timedelta, datetime
+import time
 
 app= Flask(__name__)
 app.secret_key = 'courgette'
@@ -120,9 +121,14 @@ def tournament_page():
 #TODO3: build tournament overview (i.e. analytics dashboard, settings, leaderboards) for selected tournament, allow modifying results of matches
 @app.route('/tournaments/<tournament_name>', methods=['GET', 'POST'])
 def tournament_overview(tournament_name):
+  #check if login
   if not g.user:
     return redirect('/login')
 
+  #check ownership of tourny
+  if not g.user.username == tournaments.find_one({"name": tournament_name})['owner']:  
+     return redirect("/")
+  
   else:
     tournament_matches = list(matches.find({"tournament": tournament_name}))
 
@@ -140,9 +146,17 @@ def tournament_overview(tournament_name):
         else:
           return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
       
-      elif 'edit_match' in request.form:
         
+      else:
+
+        match = [v for k,v in request.form.to_dict().items() if 'edit match' in k][0]
+        party_1 = request.form['edit party 1 {}'.format(match)]
+        party_2 = request.form['edit party 2 {}'.format(match)]
+        matches.update_one({"name" : match}, {"$set": {"result_1": party_1, "result_2": party_2}})
+        tournament_matches = list(matches.find({"tournament": tournament_name}))
+
         return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
+
 
     else: 
       return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)

@@ -17,10 +17,32 @@
 
     <body>
         <div id="navbar"></div>
+        <form method="post" id="bet_match" name="bet_match"></form>
         <div>
-        Matches for tournament {{name}}: <br>
-            {% for match in matches %} 
-                {{match.name}} <br>
+            <table class="table">
+                <tr> 
+                  <th scope="col">Date</th>
+                  <th scope="col">Name (readonly)</th>
+                  <th scope="col">Party 1 score</th>
+                  <th scope="col">Party 2 score</th>
+                  <th scope="col"></th>
+                </tr>
+            {% for match in matches%} 
+                <tr>
+                    <th>{{match.date}}</th>
+                    <th>
+                        <input type="text" placeholder="{{match.name}}" form="edit_match" name="edit name {{match.name}}" readonly>
+                    </th>                
+                    <th>
+                        <input type="text" placeholder="score party 1" form="edit_match" name="edit party 1 {{match.name}}" value="0">
+                    </th>
+                    <th>
+                        <input type="text" placeholder="score party 2" form="edit_match" name="edit party 2 {{match.name}}" value="0">
+                    </th>
+                    <th>
+                        <button type="submit" class="btn btn-primary" form="edit_match" name="bet match {{match.name}}" value="{{match.name}}">Submit</button>
+                    </th>
+                </tr>
             {%endfor%}
 
         <!-- #TODO 2: allow users to bet on matches using a form here, how can we collect bulk results and process them when normally you prespecify form names?  -->

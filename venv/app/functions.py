@@ -29,5 +29,3 @@ def create_record(table, attributes: list):
 
     result = table.insert_one(new_entry)
     return result
-
-    

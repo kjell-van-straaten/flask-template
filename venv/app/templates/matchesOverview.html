@@ -20,23 +20,29 @@
         <form method="post" id="edit_match" name="edit_match">                      
         </form>
         <div>
-            Matches for tournament {{name}}: <br>
-            <table>
-                <tr>
-                  <th>Date</th>
-                  <th>Name</th>
-                  <th>Party 1 score</th>
-                  <th>Party 2 score</th>
+            <b>Matches for tournament {{name}}: </b><br>
+            <table class="table">
+                <tr> 
+                  <th scope="col">Date</th>
+                  <th scope="col">Name (readonly)</th>
+                  <th scope="col">Party 1 score</th>
+                  <th scope="col">Party 2 score</th>
+                  <th scope="col"></th>
                 </tr>
             {% for match in matches %} 
                 <tr>
                     <th>{{match.date}}</th>
-                    <th>{{match.name}}</th>                
                     <th>
-                        <input type="text" placeholder="{{match.result_1}}" form="edit_match">
+                        <input type="text" placeholder="{{match.name}}" form="edit_match" name="edit name {{match.name}}" readonly>
+                    </th>                
+                    <th>
+                        <input type="text" placeholder="{{match.result_1}}" form="edit_match" name="edit party 1 {{match.name}}" value="{{match.result_1}}">
                     </th>
                     <th>
-                        <input type="text" placeholder="{{match.result_2}}" form="edit_match">
+                        <input type="text" placeholder="{{match.result_2}}" form="edit_match" name="edit party 2 {{match.name}}" value="{{match.result_2}}">
+                    </th>
+                    <th>
+                        <button type="submit" class="btn btn-primary" form="edit_match" name="edit match {{match.name}}" value="{{match.name}}">Submit</button>
                     </th>
                 </tr>
             {%endfor%}
@@ -51,7 +57,7 @@
             <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
             <input class="form-control" type="date" name="date" value="2021-07-22" min="2021-01-01" max="2023-21-31">
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" name="new_match">Submit</button>
             {% if failed %}
 				<small id="emailHelp" class="form-text text-danger">Match already exists</small>
 			{% endif %}
