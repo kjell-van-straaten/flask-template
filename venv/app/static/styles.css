@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-color: rgb(184, 150, 0);
+background-color: #141422;
 background-size: cover;
 background-repeat: no-repeat;
 height: 100%;
@@ -46,7 +46,7 @@ top: -45px;
     
 .input-group-prepend span{
 width: 50px;
-background-color: #FFC312;
+background-color: #39114F;
 color: black;
 border:0 !important;
 }
@@ -70,7 +70,7 @@ margin-right: 5px;
         
 .login_btn{
 color: black;
-background-color: #FFC312;
+background-color: #F9EFC1;
 width: 100px;
 }
         
@@ -91,5 +91,111 @@ margin-left: 4px;
     height: 80%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
+    margin-right: 3em;
+    margin-left: 3em;
 }
+
+.centered_container_title {
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.centered_container_buttons {
+    height: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+.centered_container_table {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-right: 3em;
+    margin-left: 3em;
+}
+
+.table-title{
+    color: #f9efc1;
+}
+
+.table{
+    background-color: #351257;
+    color: #f9efc1;
+}
+
+.card-header{
+    background-color: #351257;
+    color: #f9efc1;
+}
+
+.card-body{
+    background-color: #351257;
+    color: #f9efc1;
+}
+
+.card-footer{
+    background-color: #351257;
+    color: #f9efc1;
+}
+.navbar {
+    background-color: #141422;
+}
+.navbar .navbar-brand {
+    color: #f9efc1;
+}
+.navbar .navbar-brand:hover,
+.navbar .navbar-brand:focus {
+    color: #f9efc1;
+}
+.navbar .navbar-text {
+    color: #f9efc1;
+}
+.navbar .navbar-text a {
+    color: #f9efc1;
+}
+.navbar .navbar-text a:hover,
+.navbar .navbar-text a:focus {
+    color: #f9efc1; 
+}
+.navbar .navbar-nav .nav-link {
+    color: #f9efc1;
+    border-radius: .25rem;
+    margin: 0 0.25em;
+}
+.navbar .navbar-nav .nav-link:not(.disabled):hover,
+.navbar .navbar-nav .nav-link:not(.disabled):focus {
+    color: #f9efc1;
+}
+  .navbar .navbar-nav .nav-item.active .nav-link,
+  .navbar .navbar-nav .nav-item.active .nav-link:hover,
+  .navbar .navbar-nav .nav-item.active .nav-link:focus,
+  .navbar .navbar-nav .nav-item.show .nav-link,
+  .navbar .navbar-nav .nav-item.show .nav-link:hover,
+  .navbar .navbar-nav .nav-item.show .nav-link:focus {
+    color: #f9efc1;
+    background-color: #351257;
+  }
+  .navbar .navbar-toggler {
+    border-color: #351257;
+  }
+  .navbar .navbar-toggler:hover,
+  .navbar .navbar-toggler:focus {
+    background-color: #351257;
+  }
+  .navbar .navbar-toggler .navbar-toggler-icon {
+    color: #f9efc1;
+  }
+  .navbar .navbar-collapse,
+  .navbar .navbar-form {
+    border-color: #f9efc1;
+  }
+  .navbar .navbar-link {
+    color: #f9efc1;
+  }
+  .navbar .navbar-link:hover {
+    color: #f9efc1;
+  }
+
