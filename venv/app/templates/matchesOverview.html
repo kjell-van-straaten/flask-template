@@ -66,23 +66,29 @@
             </form>
         </div>
         <div>
+            {% if not scores %}
+                <small class="form-text text-danger">Refresh to view scores</small>
+                <a class="btn login_btn" href="/tournaments/{{name}}" role="button">Refresh</a>
+            {% endif %}
+            {% if scores %}
             <table class="table table-bordered table-hover table-dark">
-                <tr>
-                    <a class="btn login_btn" href="/tournaments/{{name}}" role="button">Refresh</a>
-                </tr>
                 <tr> 
                   <th scope="col">Name</th>
+                  <th scope="col">Number of predictions</th>
                   <th scope="col">Correct predictions</th>
                   <th scope="col">Perfect predictions</th>
                 </tr>
-            {% for score in scores %} 
+                {% for score in scores %} 
                 <tr>
                     <th>{{score._id}}</th>
+                    <th>{{score.predictions}}</th>  
                     <th>{{score.score}}</th>                 
                     <th>{{score.perfect}}</th>  
                 </tr>
-            {%endfor%}
+                {%endfor%}
+                
             </table>
+            {% endif %}
         </div>
         <!-- TODO add analytics on scores per user, number of users, etc... -->
         <script>
