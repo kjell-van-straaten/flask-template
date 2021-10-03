@@ -48,3 +48,15 @@ def update_predictions(tournament_name, match_name: str, matches_table, bets_tab
             outcome, perfect = 0, 0
 
         bets_table.update_one({"_id" : bet['_id']}, {"$set": {"outcome": outcome, "perfect": perfect}})
+
+def find_tournament_matches(matches_table, tournament_name):
+
+    tournament_matches = list(matches_table.find({"tournament": tournament_name}))
+
+    tournament_matches2 = []
+
+    for tourny_match in tournament_matches:
+      tourny_match['date'] = tourny_match['date'].date()
+      tournament_matches2.append(tourny_match)
+    
+    return tournament_matches2

@@ -131,12 +131,7 @@ def tournament_overview(tournament_name):
      return redirect("/")
   
   else:
-    tournament_matches = list(matches.find({"tournament": tournament_name}))
-    tournament_matches2 = []
-
-    for tourny_match in tournament_matches:
-      tourny_match['date'] = tourny_match['date'].date()
-      tournament_matches2.append(tourny_match)
+    tournament_matches2 = find_tournament_matches(matches, tournament_name)
 
     outcomes = bets.aggregate(
         [
@@ -163,6 +158,7 @@ def tournament_overview(tournament_name):
         match_name = party_1 + ' - ' + party_2
         if not matches.find_one({"name": match_name}):
           create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a.', 'n.a.'])
+          tournament_matches2 = find_tournament_matches(matches, tournament_name)
           return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True, scores = scores)
 
         else:
@@ -183,12 +179,7 @@ def tournament_overview(tournament_name):
 
         update_predictions(tournament_name, match, matches, bets)
 
-        tournament_matches = list(matches.find({"tournament": tournament_name}))
-
-        tournament_matches2 = []
-        for tourny_match in tournament_matches:
-          tourny_match['date'] = tourny_match['date'].date()
-          tournament_matches2.append(tourny_match)
+        tournament_matches2 = find_tournament_matches(matches, tournament_name)
 
         return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores = False)
 
