@@ -25,8 +25,8 @@
         <div class="centered_container_table">
             <table class="table table-bordered table-hover table-dark">
                 <tr> 
-                  <th scope="col">Date</th> <!-- TODO change date format -->
-                  <th scope="col">Name (readonly)</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Name</th>
                   <th scope="col">Party 1 score</th>
                   <th scope="col">Party 2 score</th>
                   <th scope="col"></th>
@@ -34,9 +34,7 @@
             {% for match in matches %} 
                 <tr>
                     <th>{{match.date}}</th>
-                    <th>
-                        <input class="form-control" type="text" placeholder="{{match.name}}" form="edit_match" name="edit name {{match.name}}" readonly>
-                    </th>                
+                    <th>{{match.name}}</th>                 
                     <th > <!-- TODO Make results input boxes smaller -->
                         <input class="form-control" type="text" placeholder="{{match.result_1}}" form="edit_match" name="edit party 1 {{match.name}}" value="{{match.result_1}}">
                     </th>
@@ -48,7 +46,6 @@
                     </th>
                 </tr>
             {%endfor%}
-            <!-- #TODO 1: button for changing match outcome, potentially through a pop-up  -->
             </table>
         </div>
         <div class="container centered_container">
@@ -68,6 +65,7 @@
             {% endif %}
             </form>
         </div>
+        <!-- TODO add analytics on scores per user, number of users, etc... -->
         <script>
             $(function(){
               $("#navbar").load("/navbar");
