@@ -30,4 +30,21 @@ def create_record(table, attributes: list):
     result = table.insert_one(new_entry)
     return result
     
-    
+def update_predictions(tournament_name, match_name: str, matches_table, bets_table):
+    match = matches_table.find_one({"name": match_name, "tournament": tournament_name})
+    winner = match['winner']
+    result = match['result_1'] + '-' + match['result_2']
+
+    bets = list(bets_table.find({"tournament": tournament_name, "match": match_name}))
+
+    for bet in bets:
+        if winner == bet['prediction']:
+            outcome = 1
+            if result == (bet['party 1'] + '-' + bet['party 2']):
+                perfect = 1
+            else:
+                perfect = 0
+        else:
+            outcome, perfect = 0, 0
+
+        bets_table.update_one({"_id" : bet['_id']}, {"$set": {"outcome": outcome, "perfect": perfect}})
