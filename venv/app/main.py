@@ -2,8 +2,7 @@ from flask import Flask, render_template, request,g, redirect, session, Response
 from app.functions import *
 from app.classes import *
 from bson import ObjectId
-from datetime import date, timedelta, datetime
-import time
+import datetime
 
 app= Flask(__name__)
 app.secret_key = 'courgette'
@@ -119,32 +118,38 @@ def tournament_page():
     return render_template('tournaments.html', user_tournaments=user_tournaments)
 
 #TODO3: build tournament overview (i.e. analytics dashboard, settings, leaderboards) for selected tournament, allow modifying results of matches
+#TODO5: add possibility of deleting matches
 @app.route('/tournaments/<tournament_name>', methods=['GET', 'POST'])
 def tournament_overview(tournament_name):
   #check if login
   if not g.user:
     return redirect('/login')
 
-  #check ownership of tourny
+  #check ownership of tournament
   if not g.user.username == tournaments.find_one({"name": tournament_name})['owner']:  
      return redirect("/")
   
   else:
     tournament_matches = list(matches.find({"tournament": tournament_name}))
+    tournament_matches2 = []
 
+    for tourny_match in tournament_matches:
+      tourny_match['date'] = tourny_match['date'].date()
+      tournament_matches2.append(tourny_match)
+    
     if request.method == 'POST':
       if 'new_match' in request.form:
         party_1 = request.form['party 1']
         party_2 = request.form['party 2']
-        date = datetime.strptime(request.form['date'], '%Y-%m-%d')
+        date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d')
         match_name = party_1 + ' - ' + party_2
 
         if not matches.find_one({"name": match_name}):
           create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a'])
-          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, success=True)
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True)
 
         else:
-          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches, failed=True)
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, failed=True)
       
         
       else:
@@ -155,22 +160,48 @@ def tournament_overview(tournament_name):
         matches.update_one({"name" : match}, {"$set": {"result_1": party_1, "result_2": party_2}})
         tournament_matches = list(matches.find({"tournament": tournament_name}))
 
-        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
+        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2)
 
 
     else: 
-      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches)
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2)
 
-#TODO4: create functionallity to be able to create a prediction for all active matches (i.e. one big form for active matches)
-#TODO5: fix date formatting.
-#and optionality to fill in scores which can be posted (only if owner of tournament!)
 @app.route('/bet/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
   active_matches = list(
     matches.find({
-      "tournament": name 
-      ##"date": {"$gte": date.today(), "$lte": date.today() + timedelta(days=7)}
+      "tournament": name, 
+      "date": {"$gte": datetime.datetime.today(), "$lte": datetime.datetime.today() + datetime.timedelta(days=5)}
     }))
 
-  return render_template('betTournament.html', name = name, matches=active_matches)
+  active_matches2 = []
+
+  for tourny_match in active_matches:
+      tourny_match['date'] = tourny_match['date'].date()
+      active_matches2.append(tourny_match)
+
+  if request.method == 'POST':
+    better_name = request.form['name']
+    email = request.form['e-mail']
+    
+    
+    if better_name == '' or email == '':
+      return render_template('betTournament.html', name = name, matches=active_matches2, failed=True)
+    else:
+      input = request.form.to_dict()
+      unique_matches = [k[12:] for k,v in input.items() if 'bet party 1' in k]
+
+      for match in unique_matches:
+        party_1 = [v for k,v in input.items() if (match in k and 'party 1' in k)][0]
+        party_2 = [v for k,v in input.items() if (match in k and 'party 2' in k)][0]
+        if party_2 > party_1:
+          winner = match.split('-')[1][1:]
+        else:
+          winner = match.split('-')[0][:-1]
+        create_record(bets, [name, match, winner, party_1, party_2, better_name, email])
+
+      return render_template('betTournament.html', name = name, matches=active_matches2, success=True)
+
+
+  return render_template('betTournament.html', name = name, matches=active_matches2)
 
