@@ -163,7 +163,7 @@ def tournament_overview(tournament_name):
         match_name = party_1 + ' - ' + party_2
         if not matches.find_one({"name": match_name}):
           create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a.', 'n.a.'])
-          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True, scores= scores)
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True, scores = scores)
 
         else:
           return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, failed=True, scores = scores)
@@ -190,11 +190,10 @@ def tournament_overview(tournament_name):
           tourny_match['date'] = tourny_match['date'].date()
           tournament_matches2.append(tourny_match)
 
-        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores= scores)
-
+        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores = False)
 
     else: 
-      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores= scores)
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores = scores)
 
 @app.route('/bet/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
