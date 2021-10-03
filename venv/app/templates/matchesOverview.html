@@ -65,6 +65,25 @@
             {% endif %}
             </form>
         </div>
+        <div>
+            <table class="table table-bordered table-hover table-dark">
+                <tr>
+                    <a class="btn login_btn" href="/tournaments/{{name}}" role="button">Refresh</a>
+                </tr>
+                <tr> 
+                  <th scope="col">Name</th>
+                  <th scope="col">Correct predictions</th>
+                  <th scope="col">Perfect predictions</th>
+                </tr>
+            {% for score in scores %} 
+                <tr>
+                    <th>{{score._id}}</th>
+                    <th>{{score.score}}</th>                 
+                    <th>{{score.perfect}}</th>  
+                </tr>
+            {%endfor%}
+            </table>
+        </div>
         <!-- TODO add analytics on scores per user, number of users, etc... -->
         <script>
             $(function(){

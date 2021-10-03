@@ -121,12 +121,13 @@ def tournament_page():
 #TODO5: add possibility of deleting matches
 @app.route('/tournaments/<tournament_name>', methods=['GET', 'POST'])
 def tournament_overview(tournament_name):
+  scores = []
   #check if login
   if not g.user:
     return redirect('/login')
 
   #check ownership of tournament
-  if not g.user.username == tournaments.find_one({"name": tournament_name})['owner']:  
+  elif not g.user.username == tournaments.find_one({"name": tournament_name})['owner']:  
      return redirect("/")
   
   else:
@@ -136,35 +137,64 @@ def tournament_overview(tournament_name):
     for tourny_match in tournament_matches:
       tourny_match['date'] = tourny_match['date'].date()
       tournament_matches2.append(tourny_match)
-    
+
+    outcomes = bets.aggregate(
+        [
+          {
+            "$group":
+              {
+                "_id": "$name",
+                "score": {"$sum": "$outcome" },
+                "perfect": { "$sum": "$perfect"},
+                "predictions": {"$sum": 1}
+              }
+          }
+        ]
+      )
+
+    for outcome in outcomes:
+      scores.append(outcome)
+          
     if request.method == 'POST':
       if 'new_match' in request.form:
         party_1 = request.form['party 1']
         party_2 = request.form['party 2']
         date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d')
         match_name = party_1 + ' - ' + party_2
-
         if not matches.find_one({"name": match_name}):
-          create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a'])
-          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True)
+          create_record(matches, [match_name, date, g.user.username, party_1, party_2, tournament_name, 'n.a.', 'n.a.', 'n.a.'])
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, success=True, scores= scores)
 
         else:
-          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, failed=True)
+          return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, failed=True, scores = scores)
       
         
       else:
-
         match = [v for k,v in request.form.to_dict().items() if 'edit match' in k][0]
         party_1 = request.form['edit party 1 {}'.format(match)]
         party_2 = request.form['edit party 2 {}'.format(match)]
-        matches.update_one({"name" : match}, {"$set": {"result_1": party_1, "result_2": party_2}})
+
+        if party_2 > party_1:
+          winner = match.split('-')[1][1:]
+        else:
+          winner = match.split('-')[0][:-1]
+
+        matches.update_one({"name" : match}, {"$set": {"result_1": party_1, "result_2": party_2, "winner": winner}})
+
+        update_predictions(tournament_name, match, matches, bets)
+
         tournament_matches = list(matches.find({"tournament": tournament_name}))
 
-        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2)
+        tournament_matches2 = []
+        for tourny_match in tournament_matches:
+          tourny_match['date'] = tourny_match['date'].date()
+          tournament_matches2.append(tourny_match)
+
+        return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores= scores)
 
 
     else: 
-      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2)
+      return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores= scores)
 
 @app.route('/bet/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
@@ -192,13 +222,17 @@ def bet_tournament(name):
       unique_matches = [k[12:] for k,v in input.items() if 'bet party 1' in k]
 
       for match in unique_matches:
+        match_object = matches.find_one({"tournament": name, "name": match})
+
         party_1 = [v for k,v in input.items() if (match in k and 'party 1' in k)][0]
         party_2 = [v for k,v in input.items() if (match in k and 'party 2' in k)][0]
+
         if party_2 > party_1:
           winner = match.split('-')[1][1:]
         else:
           winner = match.split('-')[0][:-1]
-        create_record(bets, [name, match, winner, party_1, party_2, better_name, email])
+
+        create_record(bets, [name, match, winner, party_1, party_2, better_name, email, '0', '0', match_object['date']])
 
       return render_template('betTournament.html', name = name, matches=active_matches2, success=True)
 
