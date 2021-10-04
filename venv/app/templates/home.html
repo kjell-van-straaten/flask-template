@@ -17,31 +17,34 @@
 
     <body>
         <div id="navbar"></div>
+        <div>
+            <div class="container centered_centered_container">
+                
+                <div class="card-body">
+                    <form method="post">
 
-        <div >
-            <div class="container centered_container">
-                <form method="post">
-                    <p>Welcome to BetTourny! <br> 
-                    Find your bet tournament by filling in the search bar below, or create your own tournament after logging in.</p>
-                    <div class="input-group">
-                        <input type="search" class="form-control rounded" placeholder="Tournament name" aria-label="Search"
-                          aria-describedby="search-addon" name="search-term" id="myInput"/>
-                        <button type="submit" class="btn btn-outline-primary">search</button>
-                        <div>
-                            {% if failed %}
-                                <small id="emailHelp" class="form-text text-danger">Incorrect tournament name.</small>
-                            {% endif %}
+                        <p style="color:#f9efc1;">Welcome to BetTourny! <br> 
+                            Find your bet tournament by filling in the search bar below, or create your own tournament after logging in.</p>
+                        
+                        <div class="input-group">
+                            <input type="search" class="form-control rounded" placeholder="Tournament name" aria-label="Search"
+                            aria-describedby="search-addon" name="search-term" id="myInput"/>
+                            <button type="submit" class="btn login_btn">search</button>
+                            <div>
+                                {% if failed %}
+                                    <small id="emailHelp" class="form-text text-danger">Incorrect tournament name.</small>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <ul class="list-group" id="myList">
-                        {% for t in tournaments %} 
-                        <li class="list-group-item"><a class="btn float-left" href="/bet/{{t.name}}" role="button">{{t.name}}</a></li>
-                        {%endfor%}
-                    </ul>  
-                </form>
+                        <ul class="list-group" id="myList">
+                            {% for t in tournaments %} 
+                            <li class="list-group-item"><a class="btn float-left" style="color:#141422;" href="/bet/{{t.name}}" role="button">{{t.name}}</a></li>
+                            {%endfor%}
+                        </ul>  
+                    </form>
+            </div>
             </div>
         </div>
-
         <script>
             $(function(){
               $("#navbar").load("/navbar");

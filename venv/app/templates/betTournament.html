@@ -43,21 +43,21 @@
             {%endfor%}
             </table>
             <!-- #TODO 2: fix that button + name forms are below the matches forms-->
-            <div>
-                <input type="text" placeholder="name" form="bet_match" name="name">
-                <input type="text" placeholder="e-mail" form="bet_match" name="e-mail">
-                <button type="submit" class="btn login_btn" form="bet_match" name="bet_match" value="create bets">Submit</button>
-            </div>
-
-            {% if failed %}
-				<small id="emailHelp" class="form-text text-danger">Please fill in a name and e-mail.</small>
-			{% endif %}
-            {% if success %}
-                <small id="emailHelp" class="form-text text-success">Bets successfully placed!</small>
-            {% endif %}
+            
             
 
         </div>
+        <div class="centered_container_table">
+            <input type="text" placeholder="name" form="bet_match" name="name">
+            <input type="text" placeholder="e-mail" form="bet_match" name="e-mail">
+            <button type="submit" class="btn login_btn" form="bet_match" name="bet_match" value="create bets">Submit</button>
+            {% if failed %}
+            <small id="emailHelp" class="form-text text-danger">Please fill in a name and e-mail.</small>
+        {% endif %}
+        {% if success %}
+            <small id="emailHelp" class="form-text text-success">Bets successfully placed!</small>
+        {% endif %}
+        </div>      
         <script>
             $(function(){
               $("#navbar").load("/navbar");

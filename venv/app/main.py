@@ -204,9 +204,9 @@ def bet_tournament(name):
     better_name = request.form['name']
     email = request.form['e-mail']
     
-    
     if better_name == '' or email == '':
       return render_template('betTournament.html', name = name, matches=active_matches2, failed=True)
+      
     else:
       input = request.form.to_dict()
       unique_matches = [k[12:] for k,v in input.items() if 'bet party 1' in k]

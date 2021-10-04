@@ -96,8 +96,15 @@ margin-left: 4px;
     margin-left: 3em;
 }
 
+.centered_centered_container {
+    height: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .centered_container_title {
-    height: 20%;
+    height: 17.5%;
     display: flex;
     justify-content: center;
     align-items: end;
