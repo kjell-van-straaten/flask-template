@@ -48,23 +48,28 @@
             {%endfor%}
             </table>
         </div>
-        <div class="container centered_container">
-            <form method="post" name="new_match">
-            <div class="form-group">
-            <p style="color:#f9efc1;"> Create Match </p>
-            <input class="form-control" type="text" placeholder="Enter party 1" name="party 1">
-            <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
-            <input class="form-control" type="date" name="date" value="2021-07-22" min="2021-01-01" max="2023-21-31">
+        <div class="container centered_centered_container">
+            <div class="card-body">
+                <form method="post" name="new_match">
+                <div class="form-group">
+                <p style="color:#f9efc1;"> Create Match </p>
+                <input class="form-control" type="text" placeholder="Enter party 1" name="party 1">
+                <input class="form-control" type="text" placeholder="Enter party 2" name="party 2">
+                <input class="form-control" type="date" name="date" value="2021-07-22" min="2021-01-01" max="2023-21-31">
+                </div>
+                <button type="submit" class="btn login_btn" name="new_match">Submit</button>
+                {% if failed %}
+                    <small id="emailHelp" class="form-text text-danger">Match already exists</small>
+                {% endif %}
+                {% if success %}
+                    <small id="emailHelp" class="form-text text-success">Match successfully created</small>
+                {% endif %}
+                </form>
             </div>
-            <button type="submit" class="btn login_btn" name="new_match">Submit</button>
-            {% if failed %}
-				<small id="emailHelp" class="form-text text-danger">Match already exists</small>
-			{% endif %}
-            {% if success %}
-                <small id="emailHelp" class="form-text text-success">Match successfully created</small>
-            {% endif %}
-            </form>
         </div>
+        <div class="centered_container_title">
+            <p class="table-title">Highscores for tournament {{name}}: </p>
+            </div>
         <div>
             {% if not scores %}
                 <small class="form-text text-danger">Refresh to view scores</small>
