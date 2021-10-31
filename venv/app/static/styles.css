@@ -73,6 +73,12 @@ color: black;
 background-color: #F9EFC1;
 width: 100px;
 }
+
+.big_login_btn{
+    color: black;
+    background-color: #F9EFC1;
+    width: 150px;
+    }
         
 .login_btn:hover{
 color: black;
