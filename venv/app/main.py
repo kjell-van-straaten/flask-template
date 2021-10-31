@@ -14,6 +14,8 @@ accounts = db.Account
 bets = db.Bet
 matches = db.Match
 tournaments = db.Tournament
+euros = db.Euros
+fines = db.Fines
 
 #establish encryption
 fernet = encryption()
@@ -23,14 +25,78 @@ def before_request():
   g.user = None
   if 'user_id' in session:
     current_user = accounts.find_one({"_id": ObjectId(session['user_id'])})
-    user = User(current_user['_id'],current_user['name'],current_user['password'])
+    user = User(current_user['_id'],current_user['name'],current_user['password'], current_user['role'], current_user['team'])
     g.user = user
 
-@app.route('/', methods=['GET', 'POST'])
-#landing page; should have functionality on finding a tournament to bet on, or logging in for creating/overviewing owned tournaments.
+@app.route('/')
 def index():
+  return render_template('landingpage.html')
+
+@app.route('/boetepotconfig')
+def boetepot():
+  if not g.user:
+    return redirect('/login')
+  
+  elif g.user.role != 'team':
+    return redirect('/')
+
+  return render_template('boetepotconfig.html')
+
+@app.route('/boetepot')
+def boetepot():
+  if not g.user:
+    return redirect('/login')
+  
+  elif g.user.role != 'team':
+    return redirect('/')
+
+  team_euros = list(
+    euros.find({
+      "team": g.user.team
+    }))
+
+  team_fines = list(fines.aggregate(
+        [
+          {"$match":
+            {
+              'team': g.user.team
+            }
+          },
+          {
+            "$group":
+              {
+                "_id": "$name",
+                "euros": {"$sum": "$amount" }
+              }
+          }
+        ]
+      ))
+  team_fines = sorted(team_fines, key=lambda d: d['_id'], reverse=True) 
+
+  total_amount = list(fines.aggregate(
+        [
+          {"$match":
+            {
+              'team': g.user.team
+            }
+          },
+          {
+            "$group":
+              {
+                "_id": 1,
+                "euros": {"$sum": "$amount" }
+              }
+          }
+        ]
+      ))[0]['euros']
+
+  return render_template('boetepot.html', current_user = g.user, euros=team_euros, fines=team_fines, total_amount = total_amount)
+
+@app.route('/totolanding', methods=['GET', 'POST'])
+#landing page; should have functionality on finding a tournament to bet on, or logging in for creating/overviewing owned tournaments.
+def toto():
   all_tournaments = list(tournaments.find({}))
-  return render_template('home.html', tournaments = all_tournaments)
+  return render_template('totolanding.html', tournaments = all_tournaments)
   # if request.method == 'POST':
   #   tournament_name = request.form['search-term']
   #   tournament = tournaments.find_one({"name": tournament_name})
@@ -44,7 +110,7 @@ def index():
 @app.route('/navbar')
 def navbar():
   if g.user:
-    current_user = g.user.username
+    current_user = g.user
   else:
     current_user = False
   return render_template('navbar.html', current_user=current_user)
@@ -68,7 +134,7 @@ def login():
     
     #if we have a user, and the decrypted passwords match then save new user id and redirect to tournaments page;
     if login_user and (fernet.decrypt(login_user["password"]).decode() == password):
-      user = User(login_user['_id'],login_user['name'],login_user['password'])
+      user = User(login_user['_id'],login_user['name'],login_user['password'], login_user['role'], login_user['team'])
       session['user_id'] = str(user.id)
       return redirect("/")
 
@@ -86,12 +152,13 @@ def signup():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
+    team = request.form['team']
 
     if accounts.find_one({"name": username}):
       return render_template('signup.html', failed = True) 
 
     else:
-      create_record(accounts, [username, email, fernet.encrypt(password.encode())])
+      create_record(accounts, [username, email, fernet.encrypt(password.encode()), 'none', team])
       return redirect('/login')
 
   return render_template('signup.html')
@@ -139,6 +206,7 @@ def tournament_overview(tournament_name):
             "$group":
               {
                 "_id": "$name",
+                "team": { "$first": "$team" },
                 "score": {"$sum": "$outcome" },
                 "perfect": { "$sum": "$perfect"},
                 "predictions": {"$sum": 1}
@@ -186,7 +254,7 @@ def tournament_overview(tournament_name):
     else: 
       return render_template('matchesOverview.html', name = tournament_name, matches = tournament_matches2, scores = scores)
 
-@app.route('/bet/<name>', methods=['GET', 'POST'])
+@app.route('/toto/<name>', methods=['GET', 'POST'])
 def bet_tournament(name):
   active_matches = list(
     matches.find({
@@ -205,7 +273,7 @@ def bet_tournament(name):
     email = request.form['e-mail']
     
     if better_name == '' or email == '':
-      return render_template('betTournament.html', name = name, matches=active_matches2, failed=True)
+      return render_template('toto.html', name = name, matches=active_matches2, failed=True)
       
     else:
       input = request.form.to_dict()
@@ -224,8 +292,8 @@ def bet_tournament(name):
 
         create_record(bets, [name, match, winner, party_1, party_2, better_name, email, '0', '0', match_object['date']])
 
-      return render_template('betTournament.html', name = name, matches=active_matches2, success=True)
+      return render_template('toto.html', name = name, matches=active_matches2, success=True)
 
 
-  return render_template('betTournament.html', name = name, matches=active_matches2)
+  return render_template('toto.html', name = name, matches=active_matches2)
 

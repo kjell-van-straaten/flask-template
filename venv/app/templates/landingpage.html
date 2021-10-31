@@ -17,38 +17,30 @@
 
     <body>
         <div id="navbar"></div>
-
-            <div class="centered_container_title">
-                <p class="table-title">Your tournaments:</p> </br>
-            </div>
-            <div class="centered_container_buttons">
-                {% for item in user_tournaments%} 
-                <a class="btn big_login_btn" href="/tournaments/{{item.name}}" role="button">{{item.name}}</a>
-                {%endfor%}
-                <!-- #TODO 4: improve prettyness of this page, especially the create tournament form.  -->
-            </div>
-
-        <div class="container centered_centered_container">
-            <div class="card-body">     
-                <form method="post">
-                <div class="form-group">
-                    <p style="color:#f9efc1;"> Create New Tournament </p>
-                    <input class="form-control" type="text" placeholder="Enter tournament name" name="tournamentname">
+        <div>
+            
+        </div>
+        <div>
+            <div class="container centered_centered_container">
+                
+                <div class="card-body">
+                    <p style="color:#f9efc1;">Welcome to Hajraa Automations!<br> 
                 </div>
-                <button type="submit" class="btn login_btn">Submit</button>
-                {% if failed %}
-                    <small id="emailHelp" class="form-text text-danger">Tournament already exists</small>
-                {% endif %}
-                {% if success %}
-                    <small id="emailHelp" class="form-text text-success">Tournament successfully created</small>
-                {% endif %}
-                </form>
             </div>
         </div>
-       
+
         <script>
             $(function(){
               $("#navbar").load("/navbar");
+            });
+
+            $(document).ready(function(){
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myList li").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
             });
         </script>
     </body>

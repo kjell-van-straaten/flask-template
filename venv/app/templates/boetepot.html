@@ -17,34 +17,45 @@
 
     <body>
         <div id="navbar"></div>
-        <div>
-            <div class="container centered_centered_container">
-                
-                <div class="card-body">
-                    <form method="post">
-
-                        <p style="color:#f9efc1;">Welcome to BetTourny! <br> 
-                            Find your bet tournament by filling in the search bar below, or create your own tournament after logging in.</p>
-                        
-                        <div class="input-group">
-                            <input type="search" class="form-control rounded" placeholder="Tournament name" aria-label="Search"
-                            aria-describedby="search-addon" name="search-term" id="myInput"/>
-                            <button type="submit" class="btn login_btn">search</button>
-                            <div>
-                                {% if failed %}
-                                    <small id="emailHelp" class="form-text text-danger">Incorrect tournament name.</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <ul class="list-group" id="myList">
-                            {% for t in tournaments %} 
-                            <li class="list-group-item"><a class="btn float-left" style="color:#141422;" href="/bet/{{t.name}}" role="button">{{t.name}}</a></li>
-                            {%endfor%}
-                        </ul>  
-                    </form>
-            </div>
-            </div>
+        <div class="centered_container_title">
+            <p class="table-title">Welcome to the boetepot page! Your team is {{ current_user.team }}. Active Euro's:</p>
         </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
+                <tr> 
+                    <th scope="col">Euro</th>
+                    <th scope="col">Description</th>
+                </tr>
+            {% for euro in euros %} 
+                <tr>
+                    <th>{{euro.name}}</th>   
+                    <th>{{euro.description}}</th>              
+                </tr>
+            {%endfor%}
+            </table>
+        </div>
+
+        <div class="centered_container_title">
+            <p class="table-title">Total Euros: {{ total_amount }}</p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
+                <tr> 
+                    <th scope="col">Name</th>
+                    <th scope="col">Euros</th>
+                </tr>
+                {% for fine in fines %} 
+                <tr>
+                    <th>{{fine._id}}</th>
+                    <th>{{fine.euros}}</th>
+                </tr>
+                {%endfor%}
+                
+            </table>
+        </div>
+
+
+
         <script>
             $(function(){
               $("#navbar").load("/navbar");
