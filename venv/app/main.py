@@ -8,14 +8,14 @@ app= Flask(__name__)
 app.secret_key = 'courgette'
 
 #establish connection to db
-db = connect_db()
+db1, db2 = connect_db()
 
-accounts = db.Account
-bets = db.Bet
-matches = db.Match
-tournaments = db.Tournament
-euros = db.Euros
-fines = db.Fines
+accounts = db1.Account
+bets = db1.Bet
+matches = db1.Match
+tournaments = db1.Tournament
+euros = db2.Euros
+fines = db2.Fines
 
 #establish encryption
 fernet = encryption()

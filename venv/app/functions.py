@@ -7,8 +7,9 @@ def connect_db():
     test_str = "7yPxFfQLlq1ssIIm"
     access_line = "mongodb+srv://admin:{}@cluster0.mdtqp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority".format(test_str)
     client = MongoClient(access_line, ssl_cert_reqs=ssl.CERT_NONE)
-    db = client.get_database("TournamentApp")
-    return db
+    db1 = client.get_database("TournamentApp")
+    db2 = client.get_database("Boetepot")
+    return db1, db2
 
 def encryption():
     key = b's81T7YjKtDgGwZs5etFstUsFE6ndduFkdct-OT-k7Rg='
