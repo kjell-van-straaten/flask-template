@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!--Bootsrap 4 CDN-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        
+        <!--Fontawesome CDN-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+        <!--Custom styles-->
+        <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    </head>
+
+    <body>
+        <div id="navbar"></div>
+
+        <p style="margin-bottom:3cm;">This is the first question?</p>
+
+
+        <div class="container centered_centered_container">
+            <div class="card-body">
+                <form method="post" name="new_fine">
+                <div class="form-group">
+                    <p style="color:#f9efc1;"> Create Fine</p>
+                    <select id="euro" name="name">
+                        {% for user in users %}     
+                            <option value="{{user}}">{{user}}</option>
+                        {%endfor%}
+                    </select>
+                    <select id="euro" name="euro">
+                        {% for euro in euros %}     
+                            <option value="{{euro}}">{{euro}}</option>
+                        {%endfor%}
+                    </select>
+                    <input class="form-control" type="text" placeholder="Enter Amount" name="amount">
+                </div>
+                <button type="submit" class="btn login_btn" name="new_fine">Submit</button>
+                {% if success %}
+                    <small id="emailHelp" class="form-text text-success">Fine added!</small>
+                {% endif %}
+                </form>
+            </div>
+        </div>
+
+
+        <form method="post" id="edit_fine" name="edit_fine">                      
+        </form>
+        <div class="centered_container_title">
+        <p class="table-title">Fines:</p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
+                <tr> 
+                  <th scope="col">Name</th>
+                  <th scope="col">Euro</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Week</th>
+                  <th></th>
+                </tr>
+            {% for fine in fines %} 
+                <tr>
+                    <th>{{fine.name}}</th>
+                    <th>{{fine.euro}}</th>
+                    <th>{{fine.amount}}</th>
+                    <th>{{fine.week}}</th>
+                    <th>
+                        <button type="submit" class="btn login_btn" form="edit_fine" name="edit fine {{fine._id}}" value="{{fine._id}}">Delete</button>
+                    </th>                 
+                </tr>
+            {%endfor%}
+            </table>
+        </div>
+
+        
+    
+        <script>
+            $(function(){
+              $("#navbar").load("/navbar");
+            });
+
+            $(document).ready(function(){
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myList li").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+            });
+        </script>
+    </body>
+
+
+</html>

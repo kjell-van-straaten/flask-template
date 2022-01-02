@@ -79,6 +79,7 @@
             <table class="table table-bordered table-hover table-dark">
                 <tr> 
                   <th scope="col">Name</th>
+                  <th scope="col">Team</th>
                   <th scope="col">Number of predictions</th>
                   <th scope="col">Correct predictions</th>
                   <th scope="col">Perfect predictions</th>
@@ -86,6 +87,7 @@
                 {% for score in scores %} 
                 <tr>
                     <th>{{score._id}}</th>
+                    <th>{{score.team}}</th>
                     <th>{{score.predictions}}</th>  
                     <th>{{score.score}}</th>                 
                     <th>{{score.perfect}}</th>  
