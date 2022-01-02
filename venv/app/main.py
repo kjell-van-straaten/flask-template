@@ -1,3 +1,4 @@
+from collections import namedtuple
 from flask import Flask, render_template, request,g, redirect, session, Response, url_for
 from app.functions import *
 from app.classes import *
@@ -32,22 +33,80 @@ def before_request():
 def index():
   return render_template('landingpage.html')
 
-@app.route('/boetepotconfig')
-def boetepot():
+@app.route('/boetepot/config', methods=['GET', 'POST'])
+def boetepot_config():
   if not g.user:
     return redirect('/login')
   
-  elif g.user.role != 'team':
+  elif 'boetepotmeester' not in g.user.roles:
     return redirect('/')
 
-  return render_template('boetepotconfig.html')
+  if request.method == 'POST':
+    if 'new_euro' in request.form:
+      euro = request.form['name']
+      description = request.form['description']
+      team = g.user.team
 
-@app.route('/boetepot')
+      if euros.find_one({"name": euro}):
+        team_euros = list(euros.find({"team": g.user.team}))
+        return render_template('boetepotconfig.html', euros = team_euros, failed = True) 
+
+      else:
+        create_record(euros, [euro, description, team])
+        team_euros = list(euros.find({"team": g.user.team}))
+        return render_template('boetepotconfig.html', euros = team_euros, success = True)
+
+    else:
+      euro = [v for k,v in request.form.to_dict().items() if 'edit euro' in k][0]
+      description = request.form['edit description {}'.format(euro)]
+      euros.update_one({"name" : euro}, {"$set": {"description": description}})
+
+  team_euros = list(euros.find({"team": g.user.team}))
+  return render_template('boetepotconfig.html', euros = team_euros)
+
+@app.route('/boetepot/input', methods=['GET', 'POST'])
+def boetepot_input():
+  team_euros = list(
+    euros.find({
+      "team": g.user.team
+    }))
+  
+  active_euros = [i['name'] for i in team_euros]
+
+  users = ["Ilja", "Gijs", "Hodor", "Koen", "Youri", "Barbie", "Niels", "Kjell", "Bram", "Sander", "Ali", "Zdravko", "Evgeni"]
+
+  if not g.user:
+    return redirect('/login')
+  
+  elif 'boetepotmeester' not in g.user.roles:
+    return redirect('/')
+
+  if request.method == 'POST':
+    if 'new_fine' in request.form:
+      name = request.form['name']
+      euro = request.form['euro']
+      amount = request.form['amount']
+      week = datetime.date.today().isocalendar().week
+      team = g.user.team
+
+      create_record(fines, [int(amount), euro, name, team, int(week)])
+      team_fines = list(fines.find({"team": g.user.team}))
+      return render_template('boetepotinput.html', fines = team_fines, success = True, euros = active_euros, users = users)
+
+    else:
+      fine = [v for k,v in request.form.to_dict().items() if 'edit fine' in k][0]
+
+      fines.delete_one({"_id": ObjectId(fine)})
+
+  team_fines = list(fines.find({"team": g.user.team}))
+  return render_template('boetepotinput.html', fines = team_fines, euros = active_euros, users = users)
+
+@app.route('/boetepot', methods=['GET', 'POST'])
 def boetepot():
   if not g.user:
     return redirect('/login')
   
-  elif g.user.role != 'team':
+  if 'boetepotlezer' not in g.user.roles:
     return redirect('/')
 
   team_euros = list(
@@ -71,7 +130,7 @@ def boetepot():
           }
         ]
       ))
-  team_fines = sorted(team_fines, key=lambda d: d['_id'], reverse=True) 
+  team_fines = sorted(team_fines, key=lambda d: d['euros'], reverse=True) 
 
   total_amount = list(fines.aggregate(
         [
@@ -84,13 +143,49 @@ def boetepot():
             "$group":
               {
                 "_id": 1,
-                "euros": {"$sum": "$amount" }
+                "euro": {"$sum": "$amount" }
               }
           }
         ]
-      ))[0]['euros']
+      ))[0]['euro']
 
-  return render_template('boetepot.html', current_user = g.user, euros=team_euros, fines=team_fines, total_amount = total_amount)
+  euro_fines = list(fines.aggregate(
+        [
+          {"$match":
+            {
+              'team': g.user.team
+            }
+          },
+          {
+            "$group":
+              {
+                "_id": "$euro",
+                "euro": {"$sum": "$amount" }
+              }
+          }
+        ]
+      ))
+  euro_fines = sorted(euro_fines, key=lambda d: d['euro'], reverse=True) 
+
+  week_fines = list(fines.aggregate(
+        [
+          {"$match":
+            {
+              'team': g.user.team
+            }
+          },
+          {
+            "$group":
+              {
+                "_id": "$week",
+                "euro": {"$sum": "$amount" }
+              }
+          }
+        ]
+      ))
+  week_fines = sorted(week_fines, key=lambda d: d['euro'], reverse=True) 
+
+  return render_template('boetepot.html', current_user = g.user, euros=team_euros, fines=team_fines, total_amount = total_amount, euro_fines = euro_fines, week_fines = week_fines)
 
 @app.route('/totolanding', methods=['GET', 'POST'])
 #landing page; should have functionality on finding a tournament to bet on, or logging in for creating/overviewing owned tournaments.
@@ -109,11 +204,21 @@ def toto():
 
 @app.route('/navbar')
 def navbar():
+  toto, boetepotmeester, boetepotlezer = False, False, False
   if g.user:
     current_user = g.user
+
+    if 'toto' in g.user.roles:
+      toto = True
+    if 'boetepotmeester' in g.user.roles:
+      boetepotmeester = True
+    if 'boetepotlezer' in g.user.roles:
+      boetepotlezer = True
+      
   else:
     current_user = False
-  return render_template('navbar.html', current_user=current_user)
+
+  return render_template('navbar.html', current_user=current_user, toto=toto, boetepotmeester=boetepotmeester, boetepotlezer=boetepotlezer)
 
 @app.route('/logout')
 def logout():

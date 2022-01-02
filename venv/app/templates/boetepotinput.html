@@ -18,49 +18,64 @@
     <body>
         <div id="navbar"></div>
 
-        <form method="post" id="edit_euro" name="edit_euro">                      
+        <p style="margin-bottom:3cm;">This is the first question?</p>
+
+
+        <div class="container centered_centered_container">
+            <div class="card-body">
+                <form method="post" name="new_fine">
+                <div class="form-group">
+                    <p style="color:#f9efc1;"> Create Fine</p>
+                    <select id="euro" name="name">
+                        {% for user in users %}     
+                            <option value="{{user}}">{{user}}</option>
+                        {%endfor%}
+                    </select>
+                    <select id="euro" name="euro">
+                        {% for euro in euros %}     
+                            <option value="{{euro}}">{{euro}}</option>
+                        {%endfor%}
+                    </select>
+                    <input class="form-control" type="text" placeholder="Enter Amount" name="amount">
+                </div>
+                <button type="submit" class="btn login_btn" name="new_fine">Submit</button>
+                {% if success %}
+                    <small id="emailHelp" class="form-text text-success">Fine added!</small>
+                {% endif %}
+                </form>
+            </div>
+        </div>
+
+
+        <form method="post" id="edit_fine" name="edit_fine">                      
         </form>
         <div class="centered_container_title">
-        <p class="table-title">Active euros:</p>
+        <p class="table-title">Fines:</p>
         </div>
         <div class="centered_container_table">
             <table class="table table-bordered table-hover table-dark">
                 <tr> 
+                  <th scope="col">Name</th>
                   <th scope="col">Euro</th>
-                  <th scope="col">Description</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Week</th>
                   <th></th>
                 </tr>
-            {% for euro in euros %} 
+            {% for fine in fines %} 
                 <tr>
-                    <th>{{euro.name}}</th>
-                    <th><input class="form-control" type="text" placeholder="{{euro.description}}" form="edit_euro" name="edit description {{euro.name}}" value="{{euro.description}}"></th>
+                    <th>{{fine.name}}</th>
+                    <th>{{fine.euro}}</th>
+                    <th>{{fine.amount}}</th>
+                    <th>{{fine.week}}</th>
                     <th>
-                        <button type="submit" class="btn login_btn" form="edit_euro" name="edit euro {{euro.name}}" value="{{euro.name}}">Submit</button>
+                        <button type="submit" class="btn login_btn" form="edit_fine" name="edit fine {{fine._id}}" value="{{fine._id}}">Delete</button>
                     </th>                 
                 </tr>
             {%endfor%}
             </table>
         </div>
 
-        <div class="container centered_centered_container">
-            <div class="card-body">
-                <form method="post" name="new_euro">
-                <div class="form-group">
-                <p style="color:#f9efc1;"> Create Euro </p>
-                <input class="form-control" type="text" placeholder="Enter Euro name" name="name">
-                <input class="form-control" type="text" placeholder="Enter Euro description" name="description">
-                </div>
-                <button type="submit" class="btn login_btn" name="new_euro">Submit</button>
-                {% if failed %}
-                    <small id="emailHelp" class="form-text text-danger">Euro already exists</small>
-                {% endif %}
-                {% if success %}
-                    <small id="emailHelp" class="form-text text-success">Euro successfully created</small>
-                {% endif %}
-                </form>
-            </div>
-        </div>
-
+        
     
         <script>
             $(function(){

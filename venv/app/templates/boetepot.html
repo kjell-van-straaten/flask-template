@@ -36,13 +36,13 @@
         </div>
 
         <div class="centered_container_title">
-            <p class="table-title">Total Euros: {{ total_amount }}</p>
+            <p class="table-title">Total Euros: {{ total_amount }}, breakdown per player:</p>
         </div>
         <div class="centered_container_table">
             <table class="table table-bordered table-hover table-dark">
                 <tr> 
                     <th scope="col">Name</th>
-                    <th scope="col">Euros</th>
+                    <th scope="col">Amount</th>
                 </tr>
                 {% for fine in fines %} 
                 <tr>
@@ -54,7 +54,43 @@
             </table>
         </div>
 
+        <div class="centered_container_title">
+            <p class="table-title">Breakdown per Euro:</p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
+                <tr> 
+                    <th scope="col">Euro</th>
+                    <th scope="col">Amount</th>
+                </tr>
+                {% for fine in euro_fines %} 
+                <tr>
+                    <th>{{fine._id}}</th>
+                    <th>{{fine.euro}}</th>
+                </tr>
+                {%endfor%}
+                
+            </table>
+        </div>
 
+        <div class="centered_container_title">
+            <p class="table-title">Breakdown per Week:</p>
+        </div>
+        <div class="centered_container_table">
+            <table class="table table-bordered table-hover table-dark">
+                <tr> 
+                    <th scope="col">Week</th>
+                    <th scope="col">Amount</th>
+                </tr>
+                {% for fine in week_fines %} 
+                <tr>
+                    <th>{{fine._id}}</th>
+                    <th>{{fine.euro}}</th>
+                </tr>
+                {%endfor%}
+                
+            </table>
+        </div>
 
         <script>
             $(function(){
